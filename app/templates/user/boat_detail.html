@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Boat Details{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <!-- Boat Images Carousel -->
+        <div class="relative">
+            {% if boat.images %}
+            <div class="h-96 bg-gray-200 relative overflow-hidden">
+                <img id="mainImage" src="{{ url_for('static', filename='images/' + boat.images[0].image_path) }}" alt="{{ boat.name }}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/800x600/4A5568/FFFFFF?text={{ boat.name|replace(' ', '+') }}'">
+                {% if boat.images|length > 1 %}
+                <button onclick="changeImage(-1)" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button onclick="changeImage(1)" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                {% endif %}
+            </div>
+            {% if boat.images|length > 1 %}
+            <!-- Image Thumbnails -->
+            <div class="bg-gray-100 p-4">
+                <div class="flex space-x-2 overflow-x-auto">
+                    {% for image in boat.images %}
+                    <img src="{{ url_for('static', filename='images/' + image.image_path) }}" alt="{{ boat.name }}" class="w-20 h-20 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all flex-shrink-0" onclick="changeImageTo('{{ url_for('static', filename='images/' + image.image_path) }}')" onerror="this.src='https://via.placeholder.com/80x80/4A5568/FFFFFF?text={{ boat.name|replace(' ', '+') }}'">
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="h-96 bg-gray-200 relative overflow-hidden">
+                <img id="mainImage" src="https://via.placeholder.com/800x600/4A5568/FFFFFF?text={{ boat.name|replace(' ', '+') }}" alt="{{ boat.name }}" class="w-full h-full object-cover">
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="p-8">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ boat.name }}</h1>
+                    <p class="text-lg text-gray-600 mb-1"><i class="fas fa-tag mr-2"></i>{{ boat.category }}</p>
+                    <p class="text-lg text-gray-600 mb-2"><i class="fas fa-map-marker-alt mr-2"></i>{{ boat.location }}</p>
+                    <div class="flex items-center mb-4">
+                        {% for i in range(5) %}
+                        <i class="fas fa-star text-lg {% if i < boat.average_rating %}text-yellow-400{% else %}text-gray-300{% endif %}"></i>
+                        {% endfor %}
+                        <span class="ml-2 text-gray-600">({{ "%.1f"|format(boat.average_rating) }}) - {{ boat.reviews|length }} reviews</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-3xl font-bold text-blue-600">₹{{ boat.price_per_hour }}<span class="text-lg text-gray-600">/hour</span></div>
+                    <div class="text-xl text-gray-600">₹{{ boat.price_per_day }}<span class="text-sm">/day</span></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Boat Details</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <i class="fas fa-users text-blue-500 w-6"></i>
+                            <span class="ml-3">Capacity: {{ boat.capacity }} persons</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-user-tie text-blue-500 w-6"></i>
+                            <span class="ml-3">Owner: {{ boat.vendor.business_name }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar text-blue-500 w-6"></i>
+                            <span class="ml-3">Listed: {{ boat.created_at.strftime('%B %Y') }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Description</h3>
+                    <p class="text-gray-700 leading-relaxed">{{ boat.description }}</p>
+                </div>
+            </div>
+
+            <div class="border-t pt-8">
+                <a href="{{ url_for('user.book_boat', boat_id=boat.id) }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors">
+                    <i class="fas fa-calendar-check mr-2"></i>Book This Boat
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    {% if reviews %}
+    <div class="mt-8 bg-white rounded-lg shadow-lg p-8">
+        <h2 class="text-2xl font-bold mb-6">Recent Reviews</h2>
+        <div class="space-y-6">
+            {% for review in reviews %}
+            <div class="border-b border-gray-200 pb-6 last:border-b-0">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                            {{ review.user.username[0].upper() }}
+                        </div>
+                        <div>
+                            <p class="font-semibold">{{ review.user.username }}</p>
+                            <p class="text-sm text-gray-500">{{ review.created_at.strftime('%B %d, %Y') }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        {% for i in range(5) %}
+                        <i class="fas fa-star text-sm {% if i < review.rating %}text-yellow-400{% else %}text-gray-300{% endif %}"></i>
+                        {% endfor %}
+                    </div>
+                </div>
+                <p class="text-gray-700">{{ review.review_text }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+let currentImageIndex = 0;
+const images = [
+    {% for image in boat.images %}
+    "{{ url_for('static', filename='images/' + image.image_path) }}",
+    {% endfor %}
+];
+
+function changeImage(direction) {
+    if (images.length <= 1) return;
+    
+    currentImageIndex += direction;
+    if (currentImageIndex < 0) currentImageIndex = images.length - 1;
+    if (currentImageIndex >= images.length) currentImageIndex = 0;
+    
+    document.getElementById('mainImage').src = images[currentImageIndex];
+    updateThumbnailSelection();
+}
+
+function changeImageTo(src) {
+    const index = images.indexOf(src);
+    if (index !== -1) {
+        currentImageIndex = index;
+        document.getElementById('mainImage').src = src;
+        updateThumbnailSelection();
+    }
+}
+
+function updateThumbnailSelection() {
+    // Remove selection from all thumbnails
+    const thumbnails = document.querySelectorAll('.cursor-pointer');
+    thumbnails.forEach(thumb => {
+        thumb.classList.remove('border-blue-500');
+        thumb.classList.add('border-transparent');
+    });
+    
+    // Add selection to current thumbnail
+    if (thumbnails[currentImageIndex]) {
+        thumbnails[currentImageIndex].classList.remove('border-transparent');
+        thumbnails[currentImageIndex].classList.add('border-blue-500');
+    }
+}
+
+// Initialize thumbnail selection
+document.addEventListener('DOMContentLoaded', function() {
+    updateThumbnailSelection();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Reviews{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-8">Customer Reviews</h1>
+
+    {% if reviews %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for review in reviews %}
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                        {{ review.user.username[0].upper() }}
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">{{ review.user.username }}</h3>
+                        <p class="text-sm text-gray-500">{{ review.created_at.strftime('%B %d, %Y') }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    {% for i in range(5) %}
+                    <i class="fas fa-star text-lg {% if i < review.rating %}text-yellow-400{% else %}text-gray-300{% endif %}"></i>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h4 class="font-medium text-gray-900 mb-2">{{ review.boat.name }}</h4>
+                <p class="text-gray-700 leading-relaxed">{{ review.review_text }}</p>
+            </div>
+
+            <div class="flex items-center justify-between text-sm text-gray-500">
+                <span>Booking #{{ review.booking_id }}</span>
+                <span>{{ review.boat.location }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Review Summary -->
+    <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-bold mb-6">Review Summary</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% set total_reviews = reviews|length %}
+            {% set avg_rating = reviews|sum(attribute='rating') / total_reviews if total_reviews > 0 else 0 %}
+
+            <div class="text-center">
+                <div class="text-4xl font-bold text-blue-600 mb-2">{{ "%.1f"|format(avg_rating) }}</div>
+                <div class="flex justify-center mb-2">
+                    {% for i in range(5) %}
+                    <i class="fas fa-star text-lg {% if i < avg_rating %}text-yellow-400{% else %}text-gray-300{% endif %}"></i>
+                    {% endfor %}
+                </div>
+                <p class="text-gray-600">Average Rating</p>
+            </div>
+
+            <div class="text-center">
+                <div class="text-4xl font-bold text-green-600 mb-2">{{ total_reviews }}</div>
+                <i class="fas fa-comments text-2xl text-green-400 mb-2"></i>
+                <p class="text-gray-600">Total Reviews</p>
+            </div>
+
+            <div class="text-center">
+                {% set positive_reviews = reviews|selectattr('rating', 'ge', 4)|list|length %}
+                <div class="text-4xl font-bold text-purple-600 mb-2">{{ "%.0f"|format((positive_reviews / total_reviews * 100) if total_reviews > 0 else 0) }}%</div>
+                <i class="fas fa-thumbs-up text-2xl text-purple-400 mb-2"></i>
+                <p class="text-gray-600">Positive Reviews</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-lg shadow-lg p-12 text-center">
+        <i class="fas fa-star-half-alt text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2">No reviews yet</h3>
+        <p class="text-gray-500 mb-6">Your boats haven't received any reviews yet.</p>
+        <a href="{{ url_for('vendor.add_boat') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+            <i class="fas fa-plus mr-2"></i>Add a Boat
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

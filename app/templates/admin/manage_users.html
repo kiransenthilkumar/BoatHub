@@ -1,0 +1,415 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - BoatBooking Admin{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-users-cog mr-4 text-blue-600"></i>
+                        User Management
+                    </h1>
+                    <p class="mt-2 text-gray-600">Manage all registered users and their accounts</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 px-4 py-2">
+                        <div class="text-sm text-gray-600">Total Users</div>
+                        <div class="text-2xl font-bold text-blue-600">{{ users|length }}</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 px-4 py-2">
+                        <div class="text-sm text-gray-600">Active</div>
+                        <div class="text-2xl font-bold text-green-600" id="activeCount">{{ users|selectattr('is_active', 'equalto', true)|list|length }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
+            <div class="flex items-center mb-4">
+                <div class="p-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full">
+                    <i class="fas fa-search text-xl"></i>
+                </div>
+                <h2 class="text-xl font-bold text-gray-900 ml-4">Search & Filter Users</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Search by Name/Email</label>
+                    <input type="text" id="searchInput" placeholder="Type to search..."
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Filter by Status</label>
+                    <select id="statusFilter" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                        <option value="">All Users</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Sort By</label>
+                    <select id="sortBy" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="name">Name A-Z</option>
+                        <option value="bookings">Most Bookings</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button id="resetFilters" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200">
+                        <i class="fas fa-undo mr-2"></i>
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        {% if users %}
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gradient-to-r from-blue-600 to-indigo-600">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                <i class="fas fa-user mr-2"></i>Username
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                <i class="fas fa-envelope mr-2"></i>Email
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                <i class="fas fa-calendar mr-2"></i>Joined
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                <i class="fas fa-calendar-check mr-2"></i>Bookings
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                <i class="fas fa-power-off mr-2"></i>Status
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                <i class="fas fa-cogs mr-2"></i>Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for user in users %}
+                        <tr class="hover:bg-gray-50 transition-colors duration-200 user-row" 
+                            data-user-id="{{ user.id }}"
+                            data-status="{% if user.is_active %}active{% else %}inactive{% endif %}"
+                            data-name="{{ user.username|lower }}" 
+                            data-email="{{ user.email|lower }}">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mr-3">
+                                        <span class="text-white text-xs font-bold">{{ user.username[0].upper() }}</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-bold text-gray-900">{{ user.username }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ user.email }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <div class="flex items-center">
+                                    <i class="fas fa-calendar text-gray-400 mr-2"></i>
+                                    {{ user.created_at.strftime('%b %d, %Y') }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <div class="flex items-center">
+                                    <i class="fas fa-calendar-check text-gray-400 mr-2"></i>
+                                    <span class="font-semibold">{{ user.bookings|length }}</span>
+                                    <span class="text-gray-500 ml-1">bookings</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="user-status inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+                                    {% if user.is_active %}bg-green-100 text-green-800 border border-green-200
+                                    {% else %}bg-red-100 text-red-800 border border-red-200{% endif %}">
+                                    {% if user.is_active %}
+                                        <i class="fas fa-check-circle mr-1"></i>Active
+                                    {% else %}
+                                        <i class="fas fa-ban mr-1"></i>Inactive
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex items-center space-x-2">
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-semibold transition-colors duration-200 flex items-center" onclick="viewUserDetails({{ user.id }}, '{{ user.username }}', '{{ user.email }}', '{{ user.created_at.strftime('%b %d, %Y') }}', {{ user.bookings|length }}, {{ 'true' if user.is_active else 'false' }})">
+                                        <i class="fas fa-eye mr-1"></i>
+                                        View
+                                    </button>
+                                    {% if user.is_active %}
+                                    <button class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-lg text-xs font-semibold transition-colors duration-200 flex items-center" onclick="toggleUserStatus({{ user.id }}, 'deactivate')">
+                                        <i class="fas fa-ban mr-1"></i>
+                                        Deactivate
+                                    </button>
+                                    {% else %}
+                                    <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-xs font-semibold transition-colors duration-200 flex items-center" onclick="toggleUserStatus({{ user.id }}, 'activate')">
+                                        <i class="fas fa-check-circle mr-1"></i>
+                                        Activate
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-users text-4xl text-gray-400"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No Users Found</h3>
+            <p class="text-gray-600">There are no registered users in the system yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- User Details Modal -->
+<div id="userModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-xl bg-white">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-bold text-gray-900">User Details</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="userDetailsContent" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Username</label>
+                        <p class="text-gray-900 mt-1" id="modalUsername">-</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">User ID</label>
+                        <p class="text-gray-900 mt-1" id="modalUserId">-</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Email</label>
+                        <p class="text-gray-900 mt-1" id="modalEmail">-</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Joined Date</label>
+                        <p class="text-gray-900 mt-1" id="modalJoined">-</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Total Bookings</label>
+                        <p class="text-gray-900 mt-1" id="modalBookings">-</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Account Status</label>
+                        <p class="text-gray-900 mt-1" id="modalStatus">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Search and Filter Functionality
+document.getElementById('searchInput').addEventListener('input', filterUsers);
+document.getElementById('statusFilter').addEventListener('change', filterUsers);
+document.getElementById('sortBy').addEventListener('change', sortUsers);
+document.getElementById('resetFilters').addEventListener('click', resetFilters);
+
+function filterUsers() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const statusFilter = document.getElementById('statusFilter').value;
+    const rows = document.querySelectorAll('.user-row');
+
+    rows.forEach(row => {
+        const name = row.dataset.name;
+        const email = row.dataset.email;
+        const status = row.dataset.status;
+
+        const matchesSearch = name.includes(searchTerm) || email.includes(searchTerm);
+        const matchesStatus = !statusFilter || status === statusFilter;
+
+        if (matchesSearch && matchesStatus) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function sortUsers() {
+    const sortBy = document.getElementById('sortBy').value;
+    const tbody = document.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+
+    rows.sort((a, b) => {
+        switch(sortBy) {
+            case 'name':
+                return a.dataset.name.localeCompare(b.dataset.name);
+            case 'oldest':
+                return new Date(a.querySelector('td:nth-child(3)').textContent.trim()) - new Date(b.querySelector('td:nth-child(3)').textContent.trim());
+            case 'bookings':
+                return parseInt(b.querySelector('td:nth-child(4) span:first-child').textContent) - parseInt(a.querySelector('td:nth-child(4) span:first-child').textContent);
+            default: // newest
+                return new Date(b.querySelector('td:nth-child(3)').textContent.trim()) - new Date(a.querySelector('td:nth-child(3)').textContent.trim());
+        }
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('sortBy').value = 'newest';
+    filterUsers();
+    sortUsers();
+}
+
+// Modal functions
+function viewUserDetails(userId, username, email, joined, bookings, isActive) {
+    document.getElementById('modalUserId').textContent = userId;
+    document.getElementById('modalUsername').textContent = username;
+    document.getElementById('modalEmail').textContent = email;
+    document.getElementById('modalJoined').textContent = joined;
+    document.getElementById('modalBookings').textContent = bookings;
+    document.getElementById('modalStatus').textContent = isActive ? 'Active' : 'Inactive';
+    document.getElementById('userModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('userModal').classList.add('hidden');
+}
+
+// Toggle User Status (Activate/Deactivate)
+function toggleUserStatus(userId, action) {
+    const actionName = action === 'activate' ? 'activate' : 'deactivate';
+    const confirmMsg = action === 'activate' 
+        ? 'Are you sure you want to activate this user?' 
+        : 'Are you sure you want to deactivate this user?';
+    
+    if (!confirm(confirmMsg)) return;
+
+    const endpoint = action === 'activate' 
+        ? `/admin/activate_user/${userId}` 
+        : `/admin/deactivate_user/${userId}`;
+
+    fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the row status
+            const row = document.querySelector(`[data-user-id="${userId}"]`);
+            if (row) {
+                const isNowActive = action === 'activate';
+                row.dataset.status = isNowActive ? 'active' : 'inactive';
+                
+                // Update status badge
+                const statusSpan = row.querySelector('.user-status');
+                if (isNowActive) {
+                    statusSpan.className = 'user-status inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200';
+                    statusSpan.innerHTML = '<i class="fas fa-check-circle mr-1"></i>Active';
+                } else {
+                    statusSpan.className = 'user-status inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200';
+                    statusSpan.innerHTML = '<i class="fas fa-ban mr-1"></i>Inactive';
+                }
+
+                // Update action buttons
+                const actionBtn = row.querySelector('button:nth-of-type(2)');
+                if (isNowActive) {
+                    actionBtn.className = 'bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-lg text-xs font-semibold transition-colors duration-200 flex items-center';
+                    actionBtn.innerHTML = '<i class="fas fa-ban mr-1"></i>Deactivate';
+                    actionBtn.onclick = () => toggleUserStatus(userId, 'deactivate');
+                } else {
+                    actionBtn.className = 'bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-xs font-semibold transition-colors duration-200 flex items-center';
+                    actionBtn.innerHTML = '<i class="fas fa-check-circle mr-1"></i>Activate';
+                    actionBtn.onclick = () => toggleUserStatus(userId, 'activate');
+                }
+            }
+
+            // Update active count
+            updateActiveCount();
+            
+            // Show success message
+            showNotification(`User ${actionName}d successfully!`, 'success');
+        } else {
+            showNotification(`Failed to ${actionName} user`, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification(`Error ${actionName}ing user`, 'error');
+    });
+}
+
+// Update active user count
+function updateActiveCount() {
+    const activeUsers = document.querySelectorAll('[data-status="active"]').length;
+    document.getElementById('activeCount').textContent = activeUsers;
+}
+
+// Show notification
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white font-semibold z-50 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Initialize
+resetFilters();
+</script>
+
+<style>
+/* Custom scrollbar for table */
+.overflow-x-auto::-webkit-scrollbar {
+    height: 8px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Smooth transitions for table rows */
+.user-row {
+    transition: all 0.2s ease-in-out;
+}
+
+.user-row:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}

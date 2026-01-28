@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Boat{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-2xl font-bold mb-6 text-center">Edit Boat</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+                Boat Name
+            </label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" name="name" type="text" value="{{ boat.name }}" required>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="location">
+                Location
+            </label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="location" name="location" type="text" value="{{ boat.location }}" required>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="category">
+                Category
+            </label>
+            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="category" name="category" required>
+                <option value="">Select Category</option>
+                <option value="Speed Boat" {% if boat.category == 'Speed Boat' %}selected{% endif %}>Speed Boat</option>
+                <option value="Luxury Yacht" {% if boat.category == 'Luxury Yacht' %}selected{% endif %}>Luxury Yacht</option>
+                <option value="Fishing Boat" {% if boat.category == 'Fishing Boat' %}selected{% endif %}>Fishing Boat</option>
+                <option value="Houseboat" {% if boat.category == 'Houseboat' %}selected{% endif %}>Houseboat</option>
+                <option value="Party Boat" {% if boat.category == 'Party Boat' %}selected{% endif %}>Party Boat</option>
+                <option value="Tour Boat" {% if boat.category == 'Tour Boat' %}selected{% endif %}>Tour Boat</option>
+                <option value="Diving Boat" {% if boat.category == 'Diving Boat' %}selected{% endif %}>Diving Boat</option>
+            </select>
+        </div>
+
+        <div class="mb-4 grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="price_per_hour">
+                    Price per Hour (₹)
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="price_per_hour" name="price_per_hour" type="number" step="0.01" value="{{ boat.price_per_hour }}" required>
+            </div>
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="price_per_day">
+                    Price per Day (₹)
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="price_per_day" name="price_per_day" type="number" step="0.01" value="{{ boat.price_per_day }}" required>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="capacity">
+                Capacity (persons)
+            </label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="capacity" name="capacity" type="number" value="{{ boat.capacity }}" required>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="description">
+                Description
+            </label>
+            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-24 resize-none" id="description" name="description" required>{{ boat.description }}</textarea>
+        </div>
+
+        <!-- Current Images -->
+        {% if boat.images %}
+        <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Current Images
+            </label>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {% for image in boat.images %}
+                <div class="relative">
+                    <img src="{{ url_for('static', filename='images/' + image.image_path) }}" alt="Boat Image" class="w-full h-24 object-cover rounded">
+                    <a href="{{ url_for('vendor.delete_boat_image', image_id=image.id) }}" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700" onclick="return confirm('Are you sure you want to delete this image?')">
+                        ×
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="images">
+                Add More Images (optional)
+            </label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="images" name="images" type="file" multiple accept="image/*">
+            <p class="text-sm text-gray-600 mt-1">You can upload multiple images</p>
+        </div>
+
+        <div class="flex gap-4">
+            <button class="flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                Update Boat
+            </button>
+            <a href="{{ url_for('vendor.dashboard') }}" class="flex-1 bg-gray-500 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline text-center">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

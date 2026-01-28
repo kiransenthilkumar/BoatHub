@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Book Boat{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg p-8">
+        <h1 class="text-3xl font-bold text-center mb-8">Book Your Boat</h1>
+
+        <div class="bg-gray-50 rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">{{ boat.name }}</h2>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div><strong>Location:</strong> {{ boat.location }}</div>
+                <div><strong>Capacity:</strong> {{ boat.capacity }} persons</div>
+                <div><strong>Hourly Rate:</strong> ₹{{ boat.price_per_hour }}</div>
+                <div><strong>Daily Rate:</strong> ₹{{ boat.price_per_day }}</div>
+            </div>
+        </div>
+
+        <form method="POST" class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Booking Type
+                </label>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="radio" name="booking_type" value="hourly" class="mr-3" checked onchange="updatePricing()">
+                        <span class="text-gray-700">Hourly Booking</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="booking_type" value="daily" class="mr-3" onchange="updatePricing()">
+                        <span class="text-gray-700">Daily Booking</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" for="start_date">
+                        Start Date & Time
+                    </label>
+                    <input type="datetime-local" id="start_date" name="start_date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required onchange="updatePricing()">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" for="end_date">
+                        End Date & Time
+                    </label>
+                    <input type="datetime-local" id="end_date" name="end_date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required onchange="updatePricing()">
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-medium">Total Price:</span>
+                    <span id="totalPrice" class="text-2xl font-bold text-blue-600">$0.00</span>
+                </div>
+                <p id="priceBreakdown" class="text-sm text-gray-600 mt-1"></p>
+            </div>
+
+            <div class="flex space-x-4">
+                <a href="{{ url_for('user.boat_detail', boat_id=boat.id) }}" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-4 rounded-lg text-center transition-colors">
+                    Cancel
+                </a>
+                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                    Proceed to Payment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function updatePricing() {
+    const startDate = new Date(document.getElementById('start_date').value);
+    const endDate = new Date(document.getElementById('end_date').value);
+    const bookingType = document.querySelector('input[name="booking_type"]:checked').value;
+
+    if (startDate && endDate && startDate < endDate) {
+        let totalPrice = 0;
+        let breakdown = '';
+
+        if (bookingType === 'hourly') {
+            const hours = Math.ceil((endDate - startDate) / (1000 * 60 * 60));
+            totalPrice = hours * {{ boat.price_per_hour }};
+            breakdown = `${hours} hours × ₹{{ boat.price_per_hour }}`;
+        } else {
+            const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+            totalPrice = days * {{ boat.price_per_day }};
+            breakdown = `${days} days × ₹{{ boat.price_per_day }}`;
+        }
+
+        document.getElementById('totalPrice').textContent = `₹${totalPrice.toFixed(2)}`;
+        document.getElementById('priceBreakdown').textContent = breakdown;
+    } else {
+        document.getElementById('totalPrice').textContent = '₹0.00';
+        document.getElementById('priceBreakdown').textContent = '';
+    }
+}
+
+// Set minimum date to today
+const now = new Date();
+const today = now.toISOString().slice(0, 16);
+document.getElementById('start_date').min = today;
+document.getElementById('end_date').min = today;
+
+// Update pricing on page load
+updatePricing();
+</script>
+{% endblock %}

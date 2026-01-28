@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Boat - BoatBooking{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mb-4">
+                <i class="fas fa-plus text-2xl text-white"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Add New Boat</h1>
+            <p class="text-gray-600">Expand your fleet and start earning more</p>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-900">Boat Information</h2>
+                <span class="text-sm text-gray-500">Step 1 of 2</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full" style="width: 50%"></div>
+            </div>
+        </div>
+
+        <!-- Main Form -->
+        <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fas fa-ship mr-3"></i>
+                    Boat Details
+                </h2>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" class="p-8 space-y-8">
+                <!-- Basic Information Section -->
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-info-circle text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Basic Information</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="group">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                <i class="fas fa-tag text-gray-400 mr-2"></i>
+                                Boat Name *
+                            </label>
+                            <div class="relative">
+                                <input class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" id="name" name="name" type="text" placeholder="e.g., Luxury Yacht Explorer" required>
+                                <div class="absolute right-3 top-3.5">
+                                    <i class="fas fa-ship text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="group">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                <i class="fas fa-map-marker-alt text-gray-400 mr-2"></i>
+                                Location *
+                            </label>
+                            <div class="relative">
+                                <input class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" id="location" name="location" type="text" placeholder="e.g., Marina Bay, Singapore" required>
+                                <div class="absolute right-3 top-3.5">
+                                    <i class="fas fa-map-marker-alt text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="group">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                <i class="fas fa-list text-gray-400 mr-2"></i>
+                                Category *
+                            </label>
+                            <div class="relative">
+                                <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none" id="category" name="category" required>
+                                    <option value="">Select a category</option>
+                                    <option value="Speed Boat">🚀 Speed Boat</option>
+                                    <option value="Luxury Yacht">🛥️ Luxury Yacht</option>
+                                    <option value="Fishing Boat">🎣 Fishing Boat</option>
+                                    <option value="Houseboat">🏠 Houseboat</option>
+                                    <option value="Party Boat">🎉 Party Boat</option>
+                                    <option value="Tour Boat">🚢 Tour Boat</option>
+                                    <option value="Diving Boat">🤿 Diving Boat</option>
+                                </select>
+                                <div class="absolute right-3 top-3.5 pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="group">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                <i class="fas fa-users text-gray-400 mr-2"></i>
+                                Capacity (persons) *
+                            </label>
+                            <div class="relative">
+                                <input class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" id="capacity" name="capacity" type="number" min="1" placeholder="e.g., 8" required>
+                                <div class="absolute right-3 top-3.5">
+                                    <i class="fas fa-users text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Section -->
+                <div class="bg-green-50 rounded-xl p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-rupee-sign text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Pricing</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-lg p-4 border border-green-200">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                <i class="fas fa-clock text-gray-400 mr-2"></i>
+                                Price per Hour (₹) *
+                            </label>
+                            <div class="relative">
+                                <input class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200" id="price_per_hour" name="price_per_hour" type="number" step="0.01" min="0" placeholder="e.g., 2500" required>
+                                <div class="absolute left-3 top-3.5">
+                                    <span class="text-gray-500 font-semibold">₹</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Hourly rental rate</p>
+                        </div>
+
+                        <div class="bg-white rounded-lg p-4 border border-green-200">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                <i class="fas fa-calendar text-gray-400 mr-2"></i>
+                                Price per Day (₹) *
+                            </label>
+                            <div class="relative">
+                                <input class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200" id="price_per_day" name="price_per_day" type="number" step="0.01" min="0" placeholder="e.g., 15000" required>
+                                <div class="absolute left-3 top-3.5">
+                                    <span class="text-gray-500 font-semibold">₹</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Daily rental rate (discounted)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description Section -->
+                <div class="bg-purple-50 rounded-xl p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-file-alt text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Description</h3>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                            <i class="fas fa-align-left text-gray-400 mr-2"></i>
+                            Boat Description *
+                        </label>
+                        <textarea class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 resize-vertical" id="description" name="description" rows="4" placeholder="Describe your boat's features, amenities, and what makes it special..." required></textarea>
+                        <p class="text-xs text-gray-500 mt-1">Provide detailed information to attract customers</p>
+                    </div>
+                </div>
+
+                <!-- Images Section -->
+                <div class="bg-orange-50 rounded-xl p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-images text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Boat Images</h3>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                            <i class="fas fa-camera text-gray-400 mr-2"></i>
+                            Upload Images
+                        </label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-orange-400 transition-colors duration-200">
+                            <div class="mb-4">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
+                            </div>
+                            <p class="text-gray-600 mb-2">Drag and drop images here, or click to browse</p>
+                            <p class="text-sm text-gray-500">Supported formats: JPG, PNG, GIF (Max 5MB each)</p>
+                            <input type="file" id="images" name="images" multiple accept="image/*" class="hidden">
+                            <button type="button" onclick="document.getElementById('images').click()" class="mt-4 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200">
+                                <i class="fas fa-folder-open mr-2"></i>
+                                Choose Files
+                            </button>
+                        </div>
+                        <div id="image-preview" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                    <button type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center">
+                        <i class="fas fa-plus mr-3"></i>
+                        Add Boat to Fleet
+                    </button>
+                    <a href="{{ url_for('vendor.my_boats') }}" class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center">
+                        <i class="fas fa-times mr-3"></i>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mt-8 border border-blue-200">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-lightbulb text-blue-500 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h4 class="text-lg font-semibold text-blue-900 mb-2">Tips for Better Listings</h4>
+                    <ul class="text-blue-800 space-y-1 text-sm">
+                        <li>• Use high-quality, well-lit photos from multiple angles</li>
+                        <li>• Highlight unique features and amenities</li>
+                        <li>• Be specific about capacity and included equipment</li>
+                        <li>• Set competitive prices based on your location and boat type</li>
+                        <li>• Update availability and respond quickly to inquiries</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Image preview functionality
+document.getElementById('images').addEventListener('change', function(e) {
+    const preview = document.getElementById('image-preview');
+    preview.innerHTML = '';
+
+    Array.from(e.target.files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'relative';
+                div.innerHTML = `
+                    <img src="${e.target.result}" class="w-full h-24 object-cover rounded-lg">
+                    <button type="button" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                preview.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+});
+
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const requiredFields = ['name', 'location', 'category', 'capacity', 'price_per_hour', 'price_per_day', 'description'];
+    let isValid = true;
+
+    requiredFields.forEach(field => {
+        const element = document.getElementById(field);
+        if (!element.value.trim()) {
+            element.classList.add('border-red-500', 'focus:ring-red-500');
+            isValid = false;
+        } else {
+            element.classList.remove('border-red-500', 'focus:ring-red-500');
+        }
+    });
+
+    if (!isValid) {
+        e.preventDefault();
+        alert('Please fill in all required fields.');
+    }
+});
+</script>
+{% endblock %}
