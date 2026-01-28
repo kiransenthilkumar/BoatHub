@@ -43,3 +43,6 @@ def create_app():
                     return redirect(url_for('auth.login'))
 
     return app
+
+# Create app instance for Render deployment (fallback if gunicorn app:app is used)
+app = create_app()
